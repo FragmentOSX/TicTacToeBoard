@@ -11,6 +11,10 @@ TicTacToeBoard::TicTacToeBoard()
   for(int i=0; i<BOARDSIZE; i++)
     for(int j=0; j<BOARDSIZE; j++)
       board[i][j] = Blank;
+      
+  for (int i = 0; i < 2*BOARDSIZE+2; ++i) {
+    playerScores[i] = 0;
+  }      
 }
 
 /**
@@ -38,14 +42,43 @@ Piece TicTacToeBoard::toggleTurn()
 **/ 
 Piece TicTacToeBoard::placePiece(int row, int column)
 {
+  //if game is over
+  if (getWinner() == X || getWinner() == O) {
+    return board[row][column];
+  }
+  
+  //if index is out of range
   if (row > BOARDSIZE || column > BOARDSIZE) {
     return Invalid;
   }
+  
+  //if spot is empty
   if (board[row][column] == Blank) {
     board[row][column] = turn;
-  } if (board[row][column] != Blank) {
+    
+    //calculations for getWinner
+    int point = 0;
+    if (turn == X) {
+      point = 1;
+    } 
+    if (turn == O) {
+      point = -1;
+    }
+    playerScores[row] += point;
+    playerScores[BOARDSIZE + column] += point;
+    //handles diagonals
+    if (row == column) {
+      playerScores[2*BOARDSIZE] += point;
+    }
+    if (BOARDSIZE - 1 - column == row) {
+      playerScores[2*BOARDSIZE+1] += point;
+    }
+    
+    //if spot is not empty
+  } else if (board[row][column] != Blank) {
     return board[row][column];
   }
+  
   Piece temp = turn;
   toggleTurn();
   return temp;
@@ -57,7 +90,10 @@ Piece TicTacToeBoard::placePiece(int row, int column)
 **/
 Piece TicTacToeBoard::getPiece(int row, int column)
 {
-  return Invalid;
+  if (row > BOARDSIZE || column > BOARDSIZE) {
+    return Invalid;
+  }
+  return board[row][column];
 }
 
 /**
@@ -66,5 +102,19 @@ Piece TicTacToeBoard::getPiece(int row, int column)
 **/
 Piece TicTacToeBoard::getWinner()
 {
-  return Invalid;
+  for (int i = 0; i < 2*BOARDSIZE+2; ++i) {
+    if (playerScores[i] == BOARDSIZE) {
+      return X;
+    } else if (playerScores[i] == (BOARDSIZE * -1)) {
+      return O;
+    }
+  }
+  for (int i = 0; i < BOARDSIZE; ++i) {
+    for (int j = 0; j < BOARDSIZE; ++j) {
+      if (board[i][j] == Blank) {
+        return Invalid;
+      }
+    }  
+  }
+  return Blank;
 }

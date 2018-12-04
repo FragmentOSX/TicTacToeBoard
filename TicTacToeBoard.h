@@ -20,6 +20,8 @@ class TicTacToeBoard
   private:
   	Piece board[BOARDSIZE][BOARDSIZE];
   	Piece turn;
+  	//holds scores for each row, ecah col, and diagonals
+    int playerScores[BOARDSIZE*(BOARDSIZE-1)+2];
 
   public:
   	//Constructor sets an empty board and specifies it is X's turn first
